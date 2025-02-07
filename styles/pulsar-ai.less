@@ -1,0 +1,421 @@
+.status-bar {
+  .pulsar-ai-button {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+.pulsar-ai-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .pulsar-ai-header {
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+
+    .icon {
+      margin-right: 5px;
+    }
+  }
+
+  .pulsar-ai-select-container {
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+
+    select {
+      width: 100%;
+    }
+  }
+
+  .pulsar-ai-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+
+    .pulsar-ai-message {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 4px;
+      max-width: 85%;
+
+      &.pulsar-ai-message-user {
+        margin-left: auto;
+        background-color: @button-background-color-selected;
+        color: @text-color;
+      }
+
+      &.pulsar-ai-message-assistant {
+        margin-right: auto;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+
+        pre {
+          padding: 10px;
+          background-color: rgba(0, 0, 0, 0.2);
+          border-radius: 4px;
+          overflow-x: auto;
+        }
+      }
+
+      .pulsar-ai-message-content {
+        line-height: 1.5;
+        white-space: pre-wrap;
+      }
+    }
+  }
+
+  .pulsar-ai-input-container {
+    padding: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.8);
+    display: flex;
+    gap: 8px;
+
+    textarea {
+      flex: 1;
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    button {
+      align-self: flex-end;
+
+      &.is-loading {
+        opacity: 0.7;
+        pointer-events: none;
+        position: relative;
+        padding-right: 30px;
+
+        &::after {
+          content: "";
+          position: absolute;
+          right: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 12px;
+          height: 12px;
+          border: 2px solid white;
+          border-right-color: transparent;
+          border-radius: 50%;
+          animation: btn-spinner 0.8s linear infinite;
+        }
+      }
+    }
+  }
+
+  .pulsar-ai-bottom-controls {
+    padding: 0 10px 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.8);
+
+    .share-file-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 4px 8px;
+      margin-top: 10px;
+      border-radius: 4px;
+      background-color: @button-background-color;
+      border: 1px solid @button-border-color;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: @button-background-color-hover;
+      }
+
+      .share-file-checkbox {
+        margin: 0;
+      }
+
+      .share-file-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+@keyframes btn-spinner {
+  to {
+    transform: translateY(-50%) rotate(360deg);
+  }
+}
+
+// Status bar button state
+.pulsar-ai-status-button {
+  &.selected {
+    background-color: @button-background-color-selected;
+    color: white;
+  }
+}
+
+.pulsar-ai-message {
+  .code-block {
+    margin: 8px 0;
+    padding: 8px 12px;
+    background-color: @syntax-background-color;
+    border: 1px solid @base-border-color;
+    border-radius: 4px;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.4;
+    overflow-x: auto;  // Permet le défilement horizontal
+    color: @syntax-text-color;
+
+    code {
+      display: block;
+      padding: 0;
+      background: none;
+      border: none;
+      white-space: pre;  // Force l'affichage sur une seule ligne
+      min-width: min-content;  // S'assure que le contenu ne soit pas coupé
+    }
+
+    // Style spécifique pour chaque langage
+    &[class*="language-"] {
+      position: relative;
+
+      &::before {
+        display: none;
+      }
+    }
+  }
+}
+
+.pulsar-ai-message {
+  padding: 8px;
+  margin-bottom: 8px;
+
+  &.pulsar-ai-message-user {
+    margin-left: auto;
+    background-color: @button-background-color-selected;
+    color: white;
+    max-width: 85%;
+    border-radius: 8px;
+  }
+
+  &.pulsar-ai-message-assistant,
+  &.pulsar-ai-message-system {
+    margin-right: auto;
+    background-color: @base-background-color;
+    border: 1px solid @base-border-color;
+    max-width: 85%;
+    border-radius: 8px;
+  }
+
+  .pulsar-ai-message-content {
+    font-size: 14px;
+    line-height: 1.6;
+
+    // Headings
+    h1 {
+      font-size: 1.6em;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    h2 {
+      font-size: 1.4em;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    h3 {
+      font-size: 1.2em;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    h4, h5, h6 {
+      font-size: 1.1em;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    // Paragraphs and lists
+    p {
+      margin: 0;
+    }
+
+    ul, ol {
+      padding-left: 2em;
+      margin-top: -20px;
+    }
+
+    ul {
+      margin-bottom: -40px;
+    }
+
+    ol {
+      margin-bottom: -30px;
+    }
+
+    li {
+      margin: 0;
+    }
+
+    // Inline text styling
+    strong {
+      font-weight: 600;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    code {
+      font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+      font-size: 0.9em;
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+      color: @syntax-text-color;
+    }
+
+    pre, code {
+      background-color: @base-background-color !important;
+    }
+
+    // Links
+    a {
+      color: @text-color-info;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    // Blockquotes
+    blockquote {
+      margin: 0.5em 0;
+      padding: 0.5em 1em;
+      border-left: 3px solid @text-color-subtle;
+      background-color: fade(@text-color-subtle, 10%);
+
+      p {
+        margin: 0;
+      }
+    }
+
+    // Horizontal rules
+    hr {
+      margin: 1em 0;
+      border: 0;
+      border-top: 1px solid @text-color-subtle;
+    }
+  }
+
+  // Code blocks
+  .code-block-wrapper {
+    position: relative;
+    margin: -80px 0;
+
+    .btn-copy {
+      position: absolute;
+      top: 60px;
+      right: 0;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+      border-radius: 0 4px 0 4px;
+    }
+
+    &:hover .btn-copy {
+      opacity: 1;
+    }
+  }
+
+  .code-block {
+    margin: 0;
+    padding: 12px;
+    background-color: @syntax-background-color;
+    border: 1px solid @base-border-color;
+    border-radius: 4px;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.4;
+    overflow-x: auto;
+    color: @syntax-text-color;
+
+    code {
+      display: block;
+      padding: 0;
+      background: none;
+      border: none;
+      white-space: pre;
+      min-width: min-content;
+    }
+  }
+}
+
+.code-block-wrapper {
+  position: relative;
+  margin: 8px 0;
+
+  .code-block-actions {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  &:hover .code-block-actions {
+    opacity: 1;
+  }
+
+  .btn-copy, .btn-apply {
+    position: absolute;
+    top: 60px;
+    right: 70px;
+    z-index: 1;
+    transition: opacity 0.2s ease-in-out;
+
+    &.btn-success {
+      background-color: @text-color-success;
+    }
+  }
+
+  .btn-apply {
+    background-color: @text-color-success;
+
+    &:hover {
+      background-color: saturate(@text-color-success, 20%);
+    }
+  }
+}
+.pulsar-ai-container {
+  .pulsar-ai-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    border-top: 1px solid rgba(255, 255, 255, 1);
+    font-size: 9px;
+    color: @text-color-subtle;
+
+    .made-with {
+      font-style: italic;
+    }
+
+    .coffee-button {
+      padding: 4px 4px;
+      border-radius: 4px;
+      border: 1px solid @button-border-color;
+      color: @text-color;
+      text-decoration: none;
+      font-size: 9px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: @button-background-color-hover;
+        color: @text-color-highlight;
+      }
+    }
+  }
+}

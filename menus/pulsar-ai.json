@@ -1,0 +1,53 @@
+{
+  "context-menu": {
+    "atom-text-editor": [
+      {
+        "label": "Pulsar AI",
+        "submenu": [
+          {
+            "label": "Toggle Pulsar AI",
+            "command": "pulsar-ai:toggle"
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "label": "Share Current File",
+            "command": "pulsar-ai:share-current-file"
+          },
+          {
+            "label": "Share Selected Code",
+            "command": "pulsar-ai:share-selection"
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "label": "Explain Code",
+            "command": "pulsar-ai:explain-code"
+          },
+          {
+            "label": "Optimize Code",
+            "command": "pulsar-ai:optimize-code"
+          }
+        ]
+      }
+    ]
+  },
+  "menu": [
+    {
+      "label": "Packages",
+      "submenu": [
+        {
+          "label": "Pulsar AI",
+          "submenu": [
+            {
+              "label": "Toggle",
+              "command": "pulsar-ai:toggle"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
