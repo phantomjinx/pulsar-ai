@@ -10,7 +10,8 @@
     "pulsar": ">=1.0.0"
   },
   "dependencies": {
-    "marked": "^9.0.0"
+    "marked": "^9.0.0",
+    "highlight.js": "^11.9.0"
   },
   "consumedServices": {
     "status-bar": {

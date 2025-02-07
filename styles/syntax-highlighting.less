@@ -1,0 +1,56 @@
+// syntax-highlighting.less
+@import "syntax-variables";
+
+.pulsar-ai-message {
+  .code-block {
+    background: @syntax-background-color !important;
+    color: @syntax-text-color !important;
+
+    // Make sure no opacity is applied
+    opacity: 1 !important;
+
+    // Remove any background overlays
+    &::before, &::after {
+      display: none !important;
+    }
+
+    .hljs-comment,
+    .hljs-quote {
+      color: @syntax-comment-color !important;
+      font-style: italic;
+    }
+
+    .hljs-keyword,
+    .hljs-selector-tag,
+    .hljs-addition {
+      color: @syntax-keyword-color !important;
+    }
+
+    .hljs-number,
+    .hljs-string,
+    .hljs-meta .hljs-meta-string,
+    .hljs-literal,
+    .hljs-doctag,
+    .hljs-regexp {
+      color: @syntax-string-color !important;
+    }
+
+    .hljs-title,
+    .hljs-section,
+    .hljs-name,
+    .hljs-built_in {
+      color: @syntax-function-color !important;
+    }
+
+    .hljs-variable,
+    .hljs-template-variable,
+    .hljs-selector-id,
+    .hljs-class .hljs-title {
+      color: @syntax-variable-color !important;
+    }
+
+    // Make sure code is crisp
+    -webkit-font-smoothing: antialiased;
+    text-shadow: none !important;
+  }
+}
