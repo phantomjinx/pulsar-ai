@@ -27,28 +27,28 @@
     },
     "openaiApiKey": {
       "title": "OpenAI API Key",
-      "description": "Votre clé API pour OpenAI (requis pour les modèles GPT)",
+      "description": "Your API Key for OpenAI Models",
       "type": "string",
       "default": "",
       "order": 1
     },
     "anthropicApiKey": {
       "title": "Anthropic API Key",
-      "description": "Votre clé API pour Anthropic (requis pour les modèles Claude)",
+      "description": "Your API Key for Anthropic Models",
       "type": "string",
       "default": "",
       "order": 2
     },
     "mistralApiKey": {
       "title": "Mistral API Key",
-      "description": "Votre clé API pour Mistral (requis pour les modèles Mistral)",
+      "description": "Your API Key for Mistral Models",
       "type": "string",
       "default": "",
       "order": 3
     },
     "defaultModel": {
-      "title": "Modèle par défaut",
-      "description": "Le modèle à utiliser par défaut",
+      "title": "Default model",
+      "description": "The default model",
       "type": "string",
       "default": "gpt-4o-mini",
       "enum": [
