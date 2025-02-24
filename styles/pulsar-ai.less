@@ -1,36 +1,10 @@
 @import "syntax-variables";
 @import "syntax-highlighting";
 
-.status-bar {
-  .pulsar-ai-button {
-    &:hover {
-      cursor: pointer;
-    }
-  }
-}
-
 .pulsar-ai-container {
   display: flex;
   flex-direction: column;
   height: 100%;
-
-  .pulsar-ai-header {
-    padding: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.8);
-
-    .icon {
-      margin-right: 5px;
-    }
-  }
-
-  .pulsar-ai-select-container {
-    padding: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.8);
-
-    select {
-      width: 100%;
-    }
-  }
 
   .pulsar-ai-messages {
     flex: 1;
@@ -45,314 +19,102 @@
 
       &.pulsar-ai-message-user {
         margin-left: auto;
-        background-color: @button-background-color-selected;
-        color: @text-color;
+        background-color: rgba(255, 255, 255, 0.05);
       }
 
       &.pulsar-ai-message-assistant {
         margin-right: auto;
         background-color: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-
-        pre {
-          padding: 10px;
-          background-color: rgba(0, 0, 0, 0.2);
-          border-radius: 4px;
-          overflow-x: auto;
-        }
       }
 
       .pulsar-ai-message-content {
         line-height: 1.5;
-        // white-space: pre-wrap;
       }
     }
   }
 
   .pulsar-ai-input-container {
     padding: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.8);
-    display: flex;
-    gap: 8px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+    margin: 10px;
+
+    .input-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
     textarea {
       flex: 1;
       min-height: 60px;
-      resize: vertical;
-    }
+      resize: none;
+      border: none;
+      background: transparent;
+      padding: 8px;
 
-    button {
-      align-self: flex-end;
-
-      &.is-loading {
-        opacity: 0.7;
-        pointer-events: none;
-        position: relative;
-        padding-right: 30px;
-
-        &::after {
-          content: "";
-          position: absolute;
-          right: 10px;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 12px;
-          height: 12px;
-          border: 2px solid white;
-          border-right-color: transparent;
-          border-radius: 50%;
-          animation: btn-spinner 0.8s linear infinite;
-        }
+      &:focus {
+        box-shadow: 0 0 0 1px #333;
+        outline: none;
       }
     }
-  }
 
-  .pulsar-ai-bottom-controls {
-    padding: 0 10px 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.8);
-
-    .share-file-button {
+    .toolbar-container {
       display: flex;
       align-items: center;
+      padding-top: 8px;
       gap: 8px;
-      width: 100%;
-      padding: 4px 8px;
-      margin-top: 10px;
-      border-radius: 4px;
-      background-color: @button-background-color;
-      border: 1px solid @button-border-color;
-      cursor: pointer;
-      transition: background-color 0.2s;
 
-      &:hover {
-        background-color: @button-background-color-hover;
+      .model-select {
+        background: transparent;
+        border-radius: 3px;
+        border: none;
+        font-size: 10px;
+        cursor: pointer;
+        option {
+          background-color: @base-background-color;
+          padding: 4px 8px;
+        }
       }
 
-      .share-file-checkbox {
-        margin: 0;
-      }
+      button {
+        margin-left: auto;
+        background: transparent;
+        border: none;
 
-      .share-file-label {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        &.is-loading {
+          opacity: 0.7;
+          pointer-events: none;
+          position: relative;
+          padding-right: 30px;
+
+          &::after {
+            content: "";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            border: 2px solid white;
+            border-right-color: transparent;
+            border-radius: 50%;
+            animation: btn-spinner 0.8s linear infinite;
+          }
+        }
       }
     }
   }
 }
 
+// Animation for loading button
 @keyframes btn-spinner {
   to {
     transform: translateY(-50%) rotate(360deg);
   }
 }
 
-// Status bar button state
-.pulsar-ai-status-button {
-  &.selected {
-    background-color: @button-background-color-selected;
-    color: white;
-  }
-}
-
-.pulsar-ai-message {
-  .code-block {
-    margin: 8px 0;
-    padding: 8px 12px;
-    background-color: @syntax-background-color;
-    border: 1px solid @base-border-color;
-    border-radius: 4px;
-    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
-    font-size: 13px;
-    line-height: 1.4;
-    overflow-x: auto;  // Allows horizontal scrolling
-    color: @syntax-text-color;
-
-    code {
-      display: block;
-      padding: 0;
-      background: none;
-      border: none;
-      white-space: pre;  // Force single line display
-      min-width: min-content;  // Ensures that content is not cut off
-    }
-
-    // Specific style for each language
-    &[class*="language-"] {
-      position: relative;
-
-      &::before {
-        display: none;
-      }
-    }
-  }
-}
-
-.pulsar-ai-message {
-  padding: 8px;
-  margin-bottom: 8px;
-
-  &.pulsar-ai-message-user {
-    margin-left: auto;
-    background-color: @button-background-color-selected;
-    color: white;
-    max-width: 85%;
-    border-radius: 8px;
-  }
-
-  &.pulsar-ai-message-assistant,
-  &.pulsar-ai-message-system {
-    margin-right: auto;
-    background-color: @base-background-color;
-    border: 1px solid @base-border-color;
-    max-width: 85%;
-    border-radius: 8px;
-  }
-
-  .pulsar-ai-message-content {
-    font-size: 14px;
-    line-height: 1.6;
-
-    // Headings
-    h1 {
-      font-size: 1.6em;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    h2 {
-      font-size: 1.4em;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    h3 {
-      font-size: 1.2em;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    h4, h5, h6 {
-      font-size: 1.1em;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    // Paragraphs and lists
-    p {
-      margin: 0;
-    }
-
-    ul, ol {
-      padding-left: 2em;
-      margin-top: 0;
-    }
-
-    ul {
-      margin-bottom: 0;
-    }
-
-    ol {
-      margin-bottom: 0;
-    }
-
-    li {
-      margin: 0;
-    }
-
-    // Inline text styling
-    strong {
-      font-weight: 600;
-    }
-
-    em {
-      font-style: italic;
-    }
-
-    code {
-      font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
-      font-size: 0.9em;
-      padding: 0.2em 0.4em;
-      border-radius: 3px;
-      color: black;
-    }
-
-    pre, code {
-      background-color: @base-background-color !important;
-    }
-
-    // Links
-    a {
-      color: @text-color-info;
-      text-decoration: none;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-
-    // Blockquotes
-    blockquote {
-      margin: 0.5em 0;
-      padding: 0.5em 1em;
-      border-left: 3px solid @text-color-subtle;
-      background-color: fade(@text-color-subtle, 10%);
-
-      p {
-        margin: 0;
-      }
-    }
-
-    // Horizontal rules
-    hr {
-      margin: 1em 0;
-      border: 0;
-      border-top: 1px solid @text-color-subtle;
-    }
-  }
-
-  // Code blocks
-  .code-block-wrapper {
-    position: relative;
-
-    .btn-copy {
-      position: absolute;
-      top: 0;
-      right: 0;
-      z-index: 1;
-      opacity: 0;
-      transition: opacity 0.2s ease-in-out;
-      border-radius: 0 4px 0 4px;
-    }
-
-    &:hover .btn-copy {
-      opacity: 1;
-    }
-  }
-
-  .code-block {
-    margin: 0;
-    padding: 12px;
-    background-color: @syntax-background-color;
-    border: 1px solid @base-border-color;
-    border-radius: 4px;
-    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
-    font-size: 13px;
-    line-height: 1.4;
-    overflow-x: auto;
-    color: @syntax-text-color;
-
-    code {
-      display: block;
-      padding: 0;
-      background: none;
-      border: none;
-      white-space: pre;
-      min-width: min-content;
-    }
-  }
-}
-
+// Code block styles
 .code-block-wrapper {
   position: relative;
   margin: 8px 0;
@@ -391,38 +153,162 @@
     }
   }
 }
-.pulsar-ai-container {
-  .pulsar-ai-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 10px;
-    border-top: 1px solid rgba(255, 255, 255, 1);
-    font-size: 9px;
+
+.pulsar-ai-add-context-button {
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+  background: transparent;
+  border: none;
+
+  .icon {
+    margin-right: 5px;
+  }
+}
+
+// Style pour le sélecteur de fichiers
+.project-browser {
+  position: fixed;
+  z-index: 9999; // Make sure it's above everything else
+  width: 320px;
+  max-height: 400px;
+  background-color: @syntax-background-color;
+  border: 1px solid @base-border-color;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.project-browser-header {
+  padding: 8px;
+  border-bottom: 1px solid @base-border-color;
+}
+
+.project-browser-search {
+  display: flex;
+  align-items: center;
+  background-color: @input-background-color;
+  border: 1px solid @input-border-color;
+  border-radius: 3px;
+  padding: 0 8px;
+
+  .icon {
     color: @text-color-subtle;
+    margin-right: 5px;
+  }
 
-    .made-with {
-      font-style: italic;
-    }
+  input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    height: 24px;
+    color: @text-color;
 
-    .coffee-button {
-      padding: 4px 4px;
-      border-radius: 4px;
-      border: 1px solid @button-border-color;
-      color: @text-color-subtle;
-      text-decoration: none;
-      font-size: 9px;
-      transition: all 0.2s ease;
-
-      &:hover {
-        background-color: @button-background-color-hover;
-        color: @text-color-highlight;
-      }
+    &:focus {
+      outline: none;
     }
   }
 }
 
-.pulsar-ai-apply-highlight .region {
-  background-color: rgba(100, 148, 237, 0.3) !important;
-  border: 1px solid rgba(100, 148, 237, 0.5);
+.project-browser-tree {
+  flex: 1;
+  overflow-y: auto;
+  padding: 5px 0;
+}
+
+.project-browser-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: @background-color-highlight;
+  }
+
+  .icon {
+    margin-right: 5px;
+
+    &.icon-file-directory {
+      color: @text-color-info;
+    }
+
+    &.icon-file {
+      color: @text-color;
+    }
+
+    &.spinning {
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+.project-browser-spacer {
+  width: 16px;
+  display: inline-block;
+}
+
+.project-browser-item-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.project-browser-item-path {
+  color: @text-color-subtle;
+  font-size: 0.85em;
+  margin-left: 8px;
+}
+
+.project-browser-children {
+  margin-left: 20px;
+}
+
+.project-browser-empty {
+  padding: 8px;
+  color: @text-color-subtle;
+  font-style: italic;
+  text-align: center;
+}
+
+.project-browser-search-results {
+  .project-browser-item {
+    padding: 6px 8px;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.pulsar-ai-bottom-controls {
+  display: flex;
+  padding: 8px;
+  gap: 8px;
+}
+
+.context-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  color: @text-color-subtle;
+  font-size: 0.9em;
+}
+
+.btn-context {
+  padding: 0 6px;
+  font-size: 16px;
+  line-height: 1;
+  height: 20px;
+  min-height: 20px;
+  border-radius: 3px;
+}
+
+.context-text {
+  color: @text-color-subtle;
 }
