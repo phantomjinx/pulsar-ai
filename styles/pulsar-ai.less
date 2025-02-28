@@ -312,3 +312,21 @@
 .context-text {
   color: @text-color-subtle;
 }
+
+// Styles pour l'autocomplétion
+.pulsar-ai-autocomplete-suggestion {
+  background-color: @syntax-background-color;
+  color: @text-color-subtle;
+  padding: 2px 4px;
+  border-radius: 2px;
+  border-left: 2px solid @text-color-info;
+  font-family: monospace;
+  opacity: 0.8;
+  max-width: 500px;
+  white-space: pre;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  position: relative;
+  z-index: 100;
+}

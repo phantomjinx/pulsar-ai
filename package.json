@@ -62,6 +62,35 @@
         "mistral-small"
       ],
       "order": 4
+    },
+    "autocompleteEnabled": {
+      "title": "Activer l'autocomplétion",
+      "description": "Activer ou désactiver la fonctionnalité d'autocomplétion IA",
+      "type": "boolean",
+      "default": true,
+      "order": 5
+    },
+    "autocompleteModel": {
+      "title": "Modèle pour l'autocomplétion",
+      "description": "Modèle d'IA à utiliser pour l'autocomplétion",
+      "type": "string",
+      "default": "gpt-4o-mini",
+      "enum": [
+        "gpt-4o-mini",
+        "gpt-4o",
+        "claude-3-5-haiku-latest",
+        "mistral-small"
+      ],
+      "order": 6
+    },
+    "autocompleteDelay": {
+      "title": "Délai d'autocomplétion (ms)",
+      "description": "Délai en millisecondes avant de déclencher l'autocomplétion",
+      "type": "integer",
+      "default": 500,
+      "minimum": 100,
+      "maximum": 2000,
+      "order": 7
     }
   },
   "deserializers": {
