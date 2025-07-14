@@ -1,18 +1,19 @@
-const { CompositeDisposable } = require('atom');
-const PulsarAIView = require('./view');
-const PulsarAITabTracker = require('./tab-tracker');
-const AutocompleteProvider = require('./autocomplete-provider');
+import { CompositeDisposable } from 'atom';
+import { PulsarAIView } from './view';
+import { PulsarAITabTracker } from './tab-tracker';
 
-let instance = null;
+let instance: PulsarAI | null = null;
 
 class PulsarAI {
+  private subscriptions: CompositeDisposable;
+  private view?: PulsarAIView | null;
+  private statusBarTile?: HTMLElement | null;
+  private statusBarButton?: HTMLAnchorElement;
+  private tabTracker: PulsarAITabTracker;
+
   constructor() {
-    this.statusBarTile = null;
     this.subscriptions = new CompositeDisposable();
-    this.panel = null;
-    this.statusBarButton = null;
     this.tabTracker = new PulsarAITabTracker(atom.workspace);
-    this.autocompleteProvider = new AutocompleteProvider();
 
     this.subscriptions.add(
       atom.commands.add('atom-workspace', {
@@ -20,8 +21,7 @@ class PulsarAI {
         'pulsar-ai:share-current-file': () => this.shareCurrentFile(),
         'pulsar-ai:share-selection': () => this.shareSelection(),
         'pulsar-ai:explain-code': () => this.explainCode(),
-        'pulsar-ai:optimize-code': () => this.optimizeCode(),
-        'pulsar-ai:toggle-autocomplete': () => this.toggleAutocomplete()
+        'pulsar-ai:optimize-code': () => this.optimizeCode()
       })
     );
 
@@ -29,22 +29,21 @@ class PulsarAI {
     this.subscriptions.add(
       atom.workspace.onDidDestroyPaneItem(({item}) => {
         if (item instanceof PulsarAIView) {
-          this.panel = null;
-          // Update config when panel is closed
-          atom.config.set('pulsar-ai.panelVisible', false);
+          // Update config when view is closed
+          atom.config.set('pulsar-ai.viewVisible', false);
         }
       })
     );
 
     this.subscriptions.add(
       atom.workspace.getRightDock().onDidChangeVisible((visible) => {
-        atom.config.set('pulsar-ai.panelVisible', visible);
+        atom.config.set('pulsar-ai.viewVisible', visible);
       })
     );
 
     // Add the observer to the config
     this.subscriptions.add(
-      atom.config.observe('pulsar-ai.panelVisible', (isVisible) => {
+      atom.config.observe('pulsar-ai.viewVisible', (isVisible) => {
         if (isVisible) {
           this.openPanel();
         }
@@ -53,20 +52,22 @@ class PulsarAI {
 
     this.subscriptions.add(
       atom.project.onDidChangePaths(() => {
-        // Mettre à jour le navigateur de projet si disponible
+        // Update the project browser if available
         const pulsarAIView = this.getPulsarAIView();
-        if (pulsarAIView && pulsarAIView.projectBrowser) {
-          pulsarAIView.projectBrowser.refresh();
-        }
+        // TODO
+        // if (pulsarAIView && pulsarAIView.projectBrowser) {
+        //   pulsarAIView.projectBrowser.refresh();
+        // }
       })
     );
 
     this.subscriptions.add(
       atom.workspace.observeTextEditors(() => {
         const pulsarAIView = this.getPulsarAIView();
-        if (pulsarAIView) {
-          pulsarAIView.updateShareFileButton();
-        }
+        // TODO
+        // if (pulsarAIView) {
+        //   pulsarAIView.updateShareFileButton();
+        // }
       })
     );
 
@@ -74,10 +75,11 @@ class PulsarAI {
   }
 
   deactivate() {
-    if (this.statusBarTile) {
-      this.statusBarTile.destroy();
-      this.statusBarTile = null;
-    }
+    // TODO
+    // if (this.statusBarTile) {
+    //   this.statusBarTile.destroy();
+    //   this.statusBarTile = null;
+    // }
 
     const item = this.tabTracker.getItem();
     if (item) {
@@ -88,18 +90,11 @@ class PulsarAI {
     }
 
     this.subscriptions.dispose();
-    this.panel = null;
-    
-    // Nettoyer le fournisseur d'autocomplétion
-    if (this.autocompleteProvider) {
-      this.autocompleteProvider.dispose();
-      this.autocompleteProvider = null;
-    }
-    
+
     instance = null;
   }
 
-  consumeStatusBar(statusBar) {
+  consumeStatusBar(statusBar: HTMLElement) {
     const element = document.createElement('div');
     element.classList.add('inline-block');
 
@@ -119,13 +114,17 @@ class PulsarAI {
     });
 
     element.appendChild(this.statusBarButton);
-    this.statusBarTile = statusBar.addRightTile({
-      item: element,
-      priority: 100
-    });
+    console.log('statusBarTile');
+    console.log(this.statusBarTile);
+
+    // TODO
+    // this.statusBarTile = statusBar.addRightTile({
+    //   item: element,
+    //   priority: 100
+    // });
   }
 
-  updateButtonState(isVisible) {
+  updateButtonState(isVisible: boolean) {
     if (!this.statusBarButton) return;
 
     if (isVisible) {
@@ -141,16 +140,17 @@ class PulsarAI {
       await this.toggle();
     }
 
-    const editorContent = await view.getActiveEditorContent();
-    if (!editorContent) {
-      atom.notifications.addWarning('No active file to share');
-      return;
-    }
-
-    const fileMessage = `Here is the content of the file '${editorContent.filename}' (${editorContent.language}):\n\`\`\`${editorContent.language.toLowerCase()}\n${editorContent.content}\n\`\`\``;
-    await view.addMessage('system', fileMessage, {
-      sharedFiles: [editorContent.path]
-    });
+    // TODO
+    // const editorContent = await view.getActiveEditorContent();
+    // if (!editorContent) {
+    //   atom.notifications.addWarning('No active file to share');
+    //   return;
+    // }
+    //
+    // const fileMessage = `Here is the content of the file '${editorContent.filename}' (${editorContent.language}):\n\`\`\`${editorContent.language.toLowerCase()}\n${editorContent.content}\n\`\`\``;
+    // await view.addMessage('system', fileMessage, {
+    //   sharedFiles: [editorContent.path]
+    // });
   }
 
   async shareSelection() {
@@ -175,12 +175,13 @@ class PulsarAI {
     const fileMessage = `Here is the selected code (${language}):\n\`\`\`${language.toLowerCase()}\n${selectedText}\n\`\`\``;
     // Save selection information
     const selection = editor.getSelectedBufferRange();
-    await view.addMessage('system', fileMessage, {
-      codeSelection: {
-        editor: editor,
-        selection: selection
-      }
-    });
+    // TODO
+    // await view.addMessage('system', fileMessage, {
+    //   codeSelection: {
+    //     editor: editor,
+    //     selection: selection
+    //   }
+    // });
   }
 
   async explainCode() {
@@ -205,25 +206,26 @@ class PulsarAI {
     const prompt = `Can you explain this ${language} code in detail?\n\`\`\`${language.toLowerCase()}\n${selectedText}\n\`\`\``;
     // Save selection information
     const selection = editor.getSelectedBufferRange();
-    await view.addMessage('user', prompt, {
-      codeSelection: {
-        editor: editor,
-        selection: selection
-      }
-    });
-
-    try {
-      const response = await view.aiService.sendMessage(
-        view.modelSelect.value,
-        [...view.messages]
-      );
-      await view.addMessage('assistant', response.content);
-    } catch (error) {
-      atom.notifications.addError('Error while parsing the code', {
-        detail: error.message,
-        dismissable: true
-      });
-    }
+    // TODO
+    // await view.addMessage('user', prompt, {
+    //   codeSelection: {
+    //     editor: editor,
+    //     selection: selection
+    //   }
+    // });
+    //
+    // try {
+    //   const response = await view.aiService.sendMessage(
+    //     view.modelSelect.value,
+    //     [...view.messages]
+    //   );
+    //   await view.addMessage('assistant', response.content);
+    // } catch (error) {
+    //   atom.notifications.addError('Error while parsing the code', {
+    //     detail: error.message,
+    //     dismissable: true
+    //   });
+    // }
   }
 
   async optimizeCode() {
@@ -248,30 +250,31 @@ class PulsarAI {
     const prompt = `Can you optimize this ${language} code and explain the improvements?\n\`\`\`${language.toLowerCase()}\n${selectedText}\n\`\`\``;
     // Save selection information
     const selection = editor.getSelectedBufferRange();
-    await view.addMessage('user', prompt, {
-      codeSelection: {
-        editor: editor,
-        selection: selection
-      }
-    });
-
-    try {
-      const response = await view.aiService.sendMessage(
-        view.modelSelect.value,
-        [...view.messages]
-      );
-      await view.addMessage('assistant', response.content, {
-        codeSelection: {
-          editor: editor,
-          selection: selection
-        }
-      });
-    } catch (error) {
-      atom.notifications.addError('Error while optimizing code', {
-        detail: error.message,
-        dismissable: true
-      });
-    }
+    // TODO
+    // await view.addMessage('user', prompt, {
+    //   codeSelection: {
+    //     editor: editor,
+    //     selection: selection
+    //   }
+    // });
+    //
+    // try {
+    //   const response = await view.aiService.sendMessage(
+    //     view.modelSelect.value,
+    //     [...view.messages]
+    //   );
+    //   await view.addMessage('assistant', response.content, {
+    //     codeSelection: {
+    //       editor: editor,
+    //       selection: selection
+    //     }
+    //   });
+    // } catch (error) {
+    //   atom.notifications.addError('Error while optimizing code', {
+    //     detail: error.message,
+    //     dismissable: true
+    //   });
+    // }
   }
 
   getPulsarAIView() {
@@ -284,7 +287,7 @@ class PulsarAI {
       .find(item => item instanceof PulsarAIView);
 
     if (!existingPanel) {
-      this.panel = await atom.workspace.open(new PulsarAIView(), {
+      await atom.workspace.open(new PulsarAIView(), {
         location: 'right',
         activatePane: false
       });
@@ -300,9 +303,9 @@ class PulsarAI {
       const existingPanel = atom.workspace.getPaneItems()
       .find(item => item instanceof PulsarAIView);
 
-      // If the panel does not exist, we create it
+      // If the view does not exist, we create it
       if (!existingPanel) {
-        this.panel = await atom.workspace.open(new PulsarAIView(), {
+        await atom.workspace.open(new PulsarAIView(), {
           location: 'right',
           activatePane: true,
           activateItem: true
@@ -313,13 +316,13 @@ class PulsarAI {
       const pane = atom.workspace.paneForItem(existingPanel);
       if (!pane) return;
 
-      // Checks if the panel is currently active
+      // Checks if the view is currently active
       const activePane = atom.workspace.getActivePane();
       const activePaneItem = activePane ? activePane.getActiveItem() : null;
       const isPulsarAIActive = activePaneItem instanceof PulsarAIView;
 
       if (isPulsarAIActive) {
-        // If you are on Pulsar AI, you toggle the visibility of the panel
+        // If you are on Pulsar AI, you toggle the visibility of the view
         const dock = atom.workspace.getRightDock();
         if (dock.isVisible()) {
           dock.hide();
@@ -329,7 +332,7 @@ class PulsarAI {
           pane.activateItem(existingPanel);
         }
       } else {
-        // If you are not on Pulsar AI, you activate the panel and the tab
+        // If you are not on Pulsar AI, you activate the view and the tab
         const dock = atom.workspace.getRightDock();
         if (!dock.isVisible()) {
           dock.show();
@@ -341,29 +344,11 @@ class PulsarAI {
       console.error('Error in toggle:', error);
     }
   }
-
-  // Nouvelle méthode pour activer/désactiver l'autocomplétion
-  toggleAutocomplete() {
-    const currentValue = atom.config.get('pulsar-ai.autocompleteEnabled');
-    atom.config.set('pulsar-ai.autocompleteEnabled', !currentValue);
-    
-    atom.notifications.addInfo(
-      `Autocomplétion Pulsar AI ${!currentValue ? 'activée' : 'désactivée'}`,
-      { dismissable: false }
-    );
-  }
 }
 
 module.exports = {
   activate() {
     this.pulsarAI = new PulsarAI();
-    
-    // Ajouter la configuration pour l'autocomplétion
-    atom.config.set('pulsar-ai.autocompleteEnabled', 
-      atom.config.get('pulsar-ai.autocompleteEnabled') !== undefined 
-        ? atom.config.get('pulsar-ai.autocompleteEnabled') 
-        : true
-    );
   },
 
   deactivate() {
@@ -373,14 +358,15 @@ module.exports = {
     }
   },
 
-  consumeStatusBar(statusBar) {
+  consumeStatusBar(statusBar: HTMLElement) {
     this.pulsarAI.consumeStatusBar(statusBar);
   },
 
-  deserializePulsarAIView(state) {
-    if (instance) {
-      return new PulsarAIView(state);
-    }
-    return null;
-  }
+  // TODO
+  // deserializePulsarAIView(state) {
+  //   if (instance) {
+  //     return new PulsarAIView(state);
+  //   }
+  //   return null;
+  // }
 };

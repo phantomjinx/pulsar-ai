@@ -1,4 +1,46 @@
+import { ChatOpenAI } from "@langchain/openai";
+import { ChatAnthropic } from "@langchain/anthropic";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { HumanMessage } from "@langchain/core/messages";
+import type { BaseChatModel } from "@langchain/core/language_models/chat_models";
+
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+// Map of model prefixes to their LangChain class constructors
+const modelMap: Record<string, () => BaseChatModel> = {
+  'gpt-': () => new ChatOpenAI(
+    {
+      apiKey: atom.config.get('pulsar-ai.openaiApiKey')
+    }
+  ),
+  'claude-': () => new ChatAnthropic(
+    {
+      apiKey: atom.config.get('pulsar-ai.anthropicApiKey')
+    }
+  ),
+  'mistral-': () => new ChatOpenAI(
+    { // Mistral can use the OpenAI-compatible API endpoint
+      apiKey: atom.config.get('pulsar-ai.mistralApiKey'),
+      baseURL: 'https://api.mistral.ai/v1/',
+    }
+  ),
+  'gemini-': () => new ChatGoogleGenerativeAI(
+    {
+      apiKey: atom.config.get('pulsar-ai.geminiApiKey')
+    }
+  ),
+};
+
 class AIService {
+  endpoints: {
+    openai: string;
+    anthropic: string;
+    mistral: string;
+  };
+
   constructor() {
     // Endpoint Map by Provider
     this.endpoints = {
@@ -16,6 +58,8 @@ class AIService {
       return atom.config.get('pulsar-ai.anthropicApiKey');
     } else if (model.startsWith('mistral-')) {
       return atom.config.get('pulsar-ai.mistralApiKey');
+    } else if (model.startWith('gemini-')) {
+      return atom.config.get('pulsar-ai.geminiApiKey');
     }
     throw new Error(`Unrecognized model : ${model}`);
   }
@@ -146,4 +190,4 @@ class AIService {
   }
 }
 
-module.exports = AIService;
+export const aiService = new AIService()

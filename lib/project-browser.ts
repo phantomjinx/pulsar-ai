@@ -1,5 +1,12 @@
 // project-browser.js
 class ProjectBrowser {
+  isVisible: boolean;
+  treeData: never[];
+  searchQuery: string;
+  element: HTMLDivElement;
+  treeContainer: any;
+  searchInput: HTMLInputElement;
+
   constructor() {
     this.isVisible = false;
     this.treeData = [];
@@ -82,7 +89,7 @@ class ProjectBrowser {
     this.renderTree();
   }
 
-  async getDirectoryEntries(dirPath, ignorePattern = null) {
+  async getDirectoryEntries(dirPath: string, ignorePattern = null) {
     // Default ignore patterns (you can enhance this to read from .gitignore)
     const defaultIgnorePatterns = ['node_modules', '.git', '.DS_Store'];
 
@@ -533,4 +540,4 @@ class ProjectBrowser {
   }
 }
 
-module.exports = ProjectBrowser;
+export const projectBrowser = new ProjectBrowser();

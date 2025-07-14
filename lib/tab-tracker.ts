@@ -1,8 +1,9 @@
-class PulsarAITabTracker {
-  constructor(workspace) {
-    this.workspace = workspace;
-    this.uri = 'atom://pulsar-ai-view';
-  }
+import { Workspace } from 'atom';
+
+export class PulsarAITabTracker {
+  private uri: string = 'atom://pulsar-ai-view';
+
+  constructor(private workspace: Workspace) {}
 
   async toggle() {
     const focusToRestore = document.activeElement;
@@ -18,9 +19,10 @@ class PulsarAITabTracker {
       await this.hide();
     }
 
-    if (shouldRestoreFocus) {
-      process.nextTick(() => focusToRestore.focus());
-    }
+    // TODO
+    // if (shouldRestoreFocus) {
+    //   process.nextTick(() => focusToRestore?.focus());
+    // }
   }
 
   async reveal() {
@@ -43,7 +45,9 @@ class PulsarAITabTracker {
 
   getItem() {
     const items = this.workspace.getPaneItems();
-    return items.find(item => item.getURI && item.getURI() === this.uri);
+    return null;
+    // TODO
+    // return items.find(item => item.getURI && item.getURI() === this.uri);
   }
 
   isRendered() {
@@ -55,8 +59,8 @@ class PulsarAITabTracker {
     if (!item) return false;
 
     const container = this.workspace.paneContainerForItem(item);
-    return container && container.isVisible();
+    return false;
+    // TODO
+    // return container && container.isVisible();
   }
 }
-
-module.exports = PulsarAITabTracker;

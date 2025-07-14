@@ -1,6 +1,6 @@
 {
   "name": "pulsar-ai",
-  "main": "./lib/main",
+  "main": "./dist/main.js",
   "version": "0.0.1",
   "description": "Plugin AI pour Pulsar",
   "keywords": [],
@@ -9,9 +9,24 @@
   "engines": {
     "pulsar": ">=1.0.0"
   },
+  "scripts": {
+    "build": "tsup lib/main.ts --format cjs --external pulsar",
+    "dev": "tsup lib/main.ts --format cjs --external pulsar --watch"
+  },
   "dependencies": {
-    "marked": "^9.0.0",
-    "highlight.js": "^11.9.0"
+    "@langchain/anthropic": "^0.3.24",
+    "@langchain/core": "^0.3.62",
+    "@langchain/google-genai": "^0.0.11",
+    "@langchain/openai": "^0.5.18",
+    "atom": "^1.4.2",
+    "highlight.js": "^11.9.0",
+    "langchain": "^0.2.0",
+    "marked": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/atom": "^1.40.18",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.5"
   },
   "consumedServices": {
     "status-bar": {

@@ -6,6 +6,51 @@
   flex-direction: column;
   height: 100%;
 
+  .pulsar-ai-model-selector {
+
+    .pulsar-ai-model-selector-summary {
+      padding: 1rem; /* p-4 */
+
+      font-weight: bold;
+      font-style: italic;
+
+      display: flex;
+      align-items: center;
+
+      cursor: pointer;
+
+      &:hover {
+        background-color: var(--background-color-highlight);
+      }
+
+      /* Define the arrow for the "closed" state */
+      &::before {
+        content: '►';
+        margin-right: 0.5rem;
+        transition: transform 0.2s ease-in-out;
+      }
+
+      .pulsar-ai-model-selector-summary-no-model-provider,
+      .pulsar-ai-model-selector-summary-no-model-name {
+        color: red !important;
+      }
+
+      .pulsar-ai-model-selector-summary-model-provider {
+        color: blue;
+      }
+
+      .pulsar-ai-model-selector-summary-model-name {
+        color: green;
+      }
+    }
+
+
+    /* Define the arrow for the "open" state */
+    &[open] > .pulsar-ai-model-selector-summary::before {
+      transform: rotate(90deg);
+    }
+  }
+
   .pulsar-ai-messages {
     flex: 1;
     overflow-y: auto;
