@@ -1,5 +1,6 @@
 @import "syntax-variables";
 @import "syntax-highlighting";
+@import "ui-variables";
 
 .pulsar-ai-container {
   display: flex;
@@ -44,10 +45,42 @@
       }
     }
 
-
     /* Define the arrow for the "open" state */
     &[open] > .pulsar-ai-model-selector-summary::before {
       transform: rotate(90deg);
+    }
+
+    .pulsar-ai-model-selector-content {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: left; /* Vertically align items in each row */
+      row-gap: 0.1em;       /* Space between rows */
+      column-gap: 0.1em;    /* Space between labels and inputs */
+
+      .pulsar-ai-model-selector-content-group {
+        /* This makes the label and input behave as direct children of the grid */
+        display: contents;
+
+        .pulsar-ai-model-selector-content-provider-label,
+        .pulsar-ai-model-selector-content-name-label {
+          margin-left: 0.5em;
+          margin-right: 1.0em;
+          padding-top: 0.25em;
+          font-style: italic;
+        }
+
+        .pulsar-ai-model-selector-content-provider,
+        .pulsar-ai-model-selector-content-name-input {
+          color: @text-color; // Use the theme's text color
+          background-color: @input-background-color; // Use the theme's input background color
+          border: 1px solid @input-border-color;
+          border-radius: @component-border-radius;
+          margin-right: 0.5em;
+          margin-top: 0.25em;
+          margin-bottom: 0.25em;
+        }
+      }
+
     }
   }
 
