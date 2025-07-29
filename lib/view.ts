@@ -224,18 +224,27 @@ export class PulsarAIView implements ViewModel {
     const inputWrapper = document.createElement('div')
     inputWrapper.classList.add('input-wrapper')
 
-    // New "+ Add context" button at the beginning of input-wrapper
-    const contextButton = document.createElement('button')
-    contextButton.classList.add('pulsar-ai-add-context-button')
-    contextButton.innerHTML = '<span class="icon icon-plus"></span> Add context'
+    // Create the toolbar
+    const toolbarContainer = document.createElement('div')
+    toolbarContainer.classList.add('toolbar-container')
+
+
 
     // New "Clear Context" button at the beginning of input-wrapper
     const clearButton = document.createElement('button')
     clearButton.classList.add('pulsar-ai-clear-context-button')
-    clearButton.innerHTML = '<span class="icon icon-trashcan"></span> Clear context'
+    clearButton.innerHTML = '<span class="icon icon-trashcan"></span>'
 
-    // Create the Project Navigator instance
-    document.body.appendChild(projectBrowser.element)
+    // Add clear button click event
+    clearButton.addEventListener('click', (e) => {
+      e.stopPropagation()
+      this.clearMessages()
+    })
+
+    // New "+ Add context" button at the beginning of input-wrapper
+    const contextButton = document.createElement('button')
+    contextButton.classList.add('pulsar-ai-add-context-button')
+    contextButton.innerHTML = '<span class="icon icon-plus"></span>'
 
     // Add context button click event
     contextButton.addEventListener('click', (e) => {
@@ -243,11 +252,23 @@ export class PulsarAIView implements ViewModel {
       projectBrowser.toggle()
     })
 
-    // Add clear button click event
-    clearButton.addEventListener('click', (e) => {
-      e.stopPropagation()
-      this.clearMessages()
+    // Create the Project Navigator instance
+    document.body.appendChild(projectBrowser.element)
+
+    const spanSeparator = document.createElement('span')
+    spanSeparator.classList.add('pulsar-ai-span-separator')
+
+    // Create the send button
+    this.sendButton = document.createElement('button')
+    this.sendButton.classList.add('btn', 'icon', 'icon-playback-play')
+    this.sendButton.addEventListener('click', () => {
+      this.sendMessage()
     })
+
+    toolbarContainer.appendChild(clearButton)
+    toolbarContainer.appendChild(contextButton)
+    toolbarContainer.appendChild(spanSeparator)
+    toolbarContainer.appendChild(this.sendButton)
 
     // Create the textarea
     this.textarea = document.createElement('textarea')
@@ -261,26 +282,8 @@ export class PulsarAIView implements ViewModel {
       }
     })
 
-    // Create the toolbar
-    const toolbarContainer = document.createElement('div')
-    toolbarContainer.classList.add('toolbar-container')
-
-    // Create the send button
-    this.sendButton = document.createElement('button')
-    this.sendButton.classList.add('btn', 'icon', 'icon-playback-play')
-    this.sendButton.addEventListener('click', () => {
-      console.log('TODO Send Clicked')
-      this.sendMessage()
-    })
-
-    // Add the send button to the toolbar
-    toolbarContainer.appendChild(this.sendButton)
-
-    inputWrapper.appendChild(contextButton)
-    inputWrapper.appendChild(clearButton)
     inputWrapper.appendChild(this.textarea)
     inputWrapper.appendChild(toolbarContainer)
-
     inputContainer.appendChild(inputWrapper)
 
     return inputContainer
