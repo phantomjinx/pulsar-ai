@@ -51,33 +51,115 @@
     }
 
     .pulsar-ai-model-selector-content {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      align-items: left; /* Vertically align items in each row */
-      row-gap: 0.1em;       /* Space between rows */
-      column-gap: 0.1em;    /* Space between labels and inputs */
+      display: flex;
+      flex-direction: column;
 
       .pulsar-ai-model-selector-content-group {
-        /* This makes the label and input behave as direct children of the grid */
-        display: contents;
+        display: flex;
+        flex-direction: row;
+        position: relative;
 
-        .pulsar-ai-model-selector-content-provider-label,
+        .pulsar-ai-model-selector-content-provider-label {
+          margin-left: 0.5em;
+          margin-right: 1.0em;
+          padding-top: 0.25em;
+          font-style: italic;
+          width: 15%;
+        }
+
+        .pulsar-ai-model-selector-content-provider-editor {
+          position: relative;
+          flex-grow: 1;
+
+          .pulsar-ai-model-selector-content-provider-editor-input {
+            display: block;
+            flex-grow: 1;
+
+            color: @text-color; // Use the theme's text color
+            background-color: transparent;
+            border: 1px solid @input-border-color;
+            border-radius: @component-border-radius;
+
+            font-size: medium;
+            cursor: default;
+
+            & .cursor {
+              display: none;
+            }
+          }
+
+          .pulsar-ai-model-selector-content-provider-editor-options {
+            // Position the dropdown absolutely relative to your view
+            position: absolute;
+            z-index: 10; // Ensure it appears above other content
+            width: 100%;
+            padding: none;
+            box-shadow: none;
+            font-size: medium;
+            background-color: @overlay-background-color;
+            border: 1px solid @overlay-border-color;
+            border-radius: @component-border-radius;
+            max-height: 200px;
+            overflow-y: auto;
+
+            .list-item {
+              padding: 5px 10px;
+              cursor: pointer;
+
+              &:hover {
+                background-color: @background-color-info;
+              }
+            }
+          }
+        }
+
         .pulsar-ai-model-selector-content-name-label {
           margin-left: 0.5em;
           margin-right: 1.0em;
           padding-top: 0.25em;
           font-style: italic;
+          width: 15%;
         }
 
-        .pulsar-ai-model-selector-content-provider,
-        .pulsar-ai-model-selector-content-name-input {
-          color: @text-color; // Use the theme's text color
-          background-color: @input-background-color; // Use the theme's input background color
-          border: 1px solid @input-border-color;
-          border-radius: @component-border-radius;
-          margin-right: 0.5em;
-          margin-top: 0.25em;
-          margin-bottom: 0.25em;
+        .pulsar-ai-model-selector-content-name-editor {
+          position: relative;
+          flex-grow: 1;
+
+          .pulsar-ai-model-selector-content-name-editor-input {
+            display: block;
+            flex-grow: 1;
+
+            color: @text-color; // Use the theme's text color
+            background-color: transparent;
+            border: 1px solid @input-border-color;
+            border-radius: @component-border-radius;
+
+            font-size: medium;
+          }
+
+          .pulsar-ai-model-selector-content-name-editor-options {
+            // Position the dropdown absolutely relative to your view
+            position: absolute;
+            z-index: 10; // Ensure it appears above other content
+            width: 100%;
+            padding: none;
+            box-shadow: none;
+            font-size: medium;
+            background-color: @overlay-background-color;
+            border: 1px solid @overlay-border-color;
+            border-radius: @component-border-radius;
+            max-height: 200px;
+            overflow-y: auto;
+
+            .list-item {
+              padding: 5px 10px;
+              cursor: pointer;
+
+              &:hover {
+                background-color: @background-color-info;
+              }
+            }
+          }
         }
       }
 

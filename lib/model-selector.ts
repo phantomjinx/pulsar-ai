@@ -1,25 +1,63 @@
-import { models } from './globals'
 import { EventEmitter } from 'node:events'
+import { TextEditorElement, TextEditor } from 'atom'
+import { v4 as uuidv4 } from 'uuid';
+import { ModelMetadata, models } from './globals'
 
 const NO_MODEL_PROVIDER = 'Click to select Model Provider'
 const NO_MODEL = 'Select Model'
 
 export class ModelSelector extends EventEmitter {
-  private component: HTMLDetailsElement
-  private providerSelect: HTMLSelectElement
-  private modelInput: HTMLInputElement
+  private detailsComponent: HTMLDetailsElement
   private summary: HTMLElement
+  private providerEditor!: TextEditorElement
+  private providerEditorModel!: TextEditor
+  private providerEditorModels!: HTMLElement
 
-  constructor(private modelProvider?: string, private modelName?: string) {
+  private modelEditor!: TextEditorElement
+  private modelEditorModel!: TextEditor
+  private modelEditorModels!: HTMLElement
+
+  private sessionId?: string
+  private modelProvider?: string
+  private modelName?: string
+
+  constructor(modelMetadata?: ModelMetadata) {
     super()
 
-    // --- Create Main Collapsible Container ---
-    this.component = document.createElement('details')
-    this.component.classList.add('pulsar-ai-model-selector')
+    this.sessionId = modelMetadata?.sessionId ? modelMetadata?.sessionId : uuidv4()
 
-    // --- Create the Clickable Summary Header ---
-    this.summary = document.createElement('summary')
-    this.summary.classList.add('pulsar-ai-model-selector-summary')
+    // --- Create Main Collapsible Container ---
+    this.detailsComponent = document.createElement('details')
+    this.detailsComponent.classList.add('pulsar-ai-model-selector')
+
+    this.summary = this.createSummary()
+    this.setSummary()
+
+    // --- Create the Content Container (this will be hidden/shown) ---
+    const contentDiv = document.createElement('div')
+    contentDiv.classList.add('pulsar-ai-model-selector-content')
+
+    this.createProvider(contentDiv)
+    this.createModelName(contentDiv)
+
+    // --- Assemble the Final Component ---
+    this.detailsComponent.appendChild(this.summary)
+    this.detailsComponent.appendChild(contentDiv)
+
+    if (modelMetadata?.provider) {
+      this.onProviderSelection(modelMetadata?.provider)
+    }
+
+    if (modelMetadata?.name)
+      this.setModelName(modelMetadata?.name)
+  }
+
+  /*
+   * Create the Clickable Summary Header
+   */
+  private createSummary(): HTMLElement {
+    const summary = document.createElement('summary')
+    summary.classList.add('pulsar-ai-model-selector-summary')
 
     // Add CSS for the arrow rotation on open/close
     const style = document.createElement('style')
@@ -28,119 +66,8 @@ export class ModelSelector extends EventEmitter {
         transform: rotate(180deg)
       }
     `
-    this.setSummary()
-    this.summary.appendChild(style)
-
-    // --- Create the Content Container (this will be hidden/shown) ---
-    const contentDiv = document.createElement('div')
-    contentDiv.classList.add('pulsar-ai-model-selector-content')
-
-    // --- Create Provider Selector ---
-    this.providerSelect = document.createElement('select')
-    this.providerSelect.classList.add('pulsar-ai-model-selector-content-provider')
-
-    const defaultOption = document.createElement('option')
-    defaultOption.value = ''
-    defaultOption.textContent = '-- Select a Provider --'
-    this.providerSelect.appendChild(defaultOption)
-
-    Object.keys(models).forEach(provider => {
-      const option = document.createElement('option')
-      option.value = provider
-      option.textContent = provider.charAt(0).toUpperCase() + provider.slice(1) // Capitalize
-      this.providerSelect.appendChild(option)
-    })
-
-    // TODO - replace the input / datalist with atom themed editor instead
-    //
-    // const textEditor = document.createElement('atom-text-editor')
-    // textEditor.setAttribute('mini', '') // This makes it a single-line input
-    // In your view's rendering code
-    // const suggestionsPanel = document.createElement('div');
-    // suggestionsPanel.classList.add('select-list', 'popover-list'); // Use Pulsar's built-in classes
-    //
-    // const models = ['gpt-4', 'claude-3', 'gemini-1.5'];
-    // models.forEach(modelName => {
-    //   const item = document.createElement('div');
-    //   item.classList.add('list-item');
-    //   item.textContent = modelName;
-    //   item.onclick = () => {
-    //     textEditor.getModel().setText(modelName);
-    //     suggestionsPanel.style.display = 'none'; // Hide list on selection
-    //   };
-    //   suggestionsPanel.appendChild(item);
-    // });
-    //
-    // suggestionsPanel.style.display = 'none'; // Start with the list hidden
-    // // Append suggestionsPanel to your view
-    // In your view's logic
-    // textEditor.addEventListener('focus', () => {
-    //   suggestionsPanel.style.display = 'block';
-    // });
-
-    // --- Create Model Input and Datalist ---
-    this.modelInput = document.createElement('input')
-    this.modelInput.classList.add('pulsar-ai-model-selector-content-name-input')
-    this.modelInput.placeholder = 'Select a provider first...'
-    this.modelInput.disabled = true // Disabled until a provider is chosen
-    this.modelInput.addEventListener('change', () => {
-      this.setModelName(this.modelInput.value)
-      this.emitChange()
-    })
-
-    const modelDatalist = document.createElement('datalist')
-    modelDatalist.id = 'models-list-' + Math.random().toString(36).substr(2, 9) // Unique ID
-    this.modelInput.setAttribute('list', modelDatalist.id)
-
-    // --- Dynamic Update Logic ---
-    this.providerSelect.addEventListener('change', () => {
-      this.setModelProvider(this.providerSelect.value)
-
-      // Clear previous options and input value
-      modelDatalist.innerHTML = ''
-      this.setModelName('')
-
-      if (this.modelProvider) {
-        this.modelInput.disabled = false
-        this.modelInput.placeholder = 'Choose or type a model name'
-        const providerModels = models[this.modelProvider] || []
-        providerModels.forEach(modelName => {
-          const option = document.createElement('option')
-          option.value = modelName
-          modelDatalist.appendChild(option)
-        })
-      } else {
-        this.modelInput.disabled = true
-        this.modelInput.placeholder = 'Select a provider first...'
-      }
-
-      this.emitChange()
-    })
-
-    // --- Assemble the Content Div ---
-    const providerGroup = document.createElement('div')
-    providerGroup.classList.add('pulsar-ai-model-selector-content-group')
-    const providerLabel = document.createElement('label')
-    providerLabel.classList.add('pulsar-ai-model-selector-content-provider-label')
-    providerLabel.textContent = 'Provider'
-    providerGroup.appendChild(providerLabel)
-    providerGroup.appendChild(this.providerSelect)
-
-    const modelGroup = document.createElement('div')
-    modelGroup.classList.add('pulsar-ai-model-selector-content-group')
-    const modelLabel = document.createElement('label')
-    modelLabel.classList.add('pulsar-ai-model-selector-content-name-label')
-    modelLabel.textContent = 'Model'
-    modelGroup.appendChild(modelLabel)
-    modelGroup.appendChild(this.modelInput)
-    modelGroup.appendChild(modelDatalist)
-
-    contentDiv.appendChild(providerGroup)
-    contentDiv.appendChild(modelGroup)
-
-    // --- Assemble the Final Component ---
-    this.component.appendChild(this.summary)
-    this.component.appendChild(contentDiv)
+    summary.appendChild(style)
+    return summary
   }
 
   private setSummary() {
@@ -151,16 +78,12 @@ export class ModelSelector extends EventEmitter {
     let modelNameTxt = NO_MODEL
     let modelNameClass = 'pulsar-ai-model-selector-summary-no-model-name'
 
-    // 'pulsar-ai-model-selector-summary-model-name'
-
-    const modelProvider = this.getModelProvider()
-    if (modelProvider.length > 0) {
-      modelProviderTxt = modelProvider
+    if (this.modelProvider && this.modelProvider.length > 0) {
+      modelProviderTxt = this.modelProvider
       modelProviderClass = 'pulsar-ai-model-selector-summary-model-provider'
 
-      const modelName = this.getModelName()
-      if (modelName.length > 0) {
-        modelNameTxt = modelName
+      if (this.modelName && this.modelName.length > 0) {
+        modelNameTxt = this.modelName
         modelNameClass = 'pulsar-ai-model-selector-summary-model-name'
       }
     }
@@ -172,27 +95,198 @@ export class ModelSelector extends EventEmitter {
     `
   }
 
-  getComponent(): HTMLDetailsElement {
-    return this.component
+  private editorProvidersDisplayed(open: boolean) {
+    const value = open ? 'block' : 'none'
+    this.providerEditorModels.style.display = value
   }
 
-  getModelProvider(): string {
-    return !this.modelProvider ? '' : this.modelProvider
+  private editorModelsDisplayed(open: boolean) {
+    const value = open ? 'block' : 'none'
+    this.modelEditorModels.style.display = value
+  }
+
+  private onProviderSelection(value: string) {
+
+    // Close the provider Editor
+    this.editorProvidersDisplayed(false)
+
+    // Assign the provider Editor text
+    this.setModelProvider(value)
+
+    this.modelEditorModels.innerHTML = '' // Clear previous options
+    this.modelEditorModel.setText('') // Clear input value
+    this.setModelName('')
+
+    if (this.modelProvider) {
+      // this.modelEditor.disabled = false
+      this.modelEditorModel.setPlaceholderText('Choose or type a model name')
+      const providerModels = models[this.modelProvider] || []
+
+      // Create a list of selectable items
+      providerModels.forEach(modelName => {
+        const item = document.createElement('div')
+        item.classList.add('list-item')
+        item.textContent = modelName
+        // When an item is clicked, update the editor and hide the panel
+        item.addEventListener('mousedown', (e) => {
+          e.preventDefault() // Prevent the editor from losing focus
+          this.setModelName(modelName)
+          this.emitChange()
+        })
+        this.modelEditorModels.appendChild(item)
+      })
+    } else {
+      // this.modelEditor.disabled = true
+      this.modelEditorModel.setPlaceholderText('Select a provider first...')
+    }
+    this.emitChange()
+  }
+
+  /*
+   * Create Provider selector
+   */
+  private createProvider(parent: HTMLDivElement) {
+    const providerWrapper = document.createElement('div')
+    providerWrapper.classList.add('pulsar-ai-model-selector-content-provider-editor')
+
+    this.providerEditor = document.createElement('atom-text-editor')
+    this.providerEditor.setAttribute('mini', '')
+    this.providerEditor.classList.add('pulsar-ai-model-selector-content-provider-editor-input')
+
+    this.providerEditorModel = this.providerEditor.getModel()
+    this.providerEditorModel.setPlaceholderText('Select a Provider')
+
+    this.providerEditorModels = document.createElement('div');
+    this.providerEditorModels.classList.add('select-list', 'popover-list', 'pulsar-ai-model-selector-content-provider-editor-options')
+    this.editorProvidersDisplayed(false)
+
+    this.providerEditorModels.innerHTML = '' // Clear previous options
+    Object.keys(models).forEach(provider => {
+      const item = document.createElement('div')
+      item.classList.add('list-item')
+      item.textContent = provider
+      // When an item is clicked, update the editor and hide the panel
+      item.addEventListener('mousedown', (e) => {
+        e.preventDefault() // Prevent the editor from losing focus
+        this.editorProvidersDisplayed(false)
+        this.onProviderSelection(provider)
+      })
+      this.providerEditorModels.appendChild(item)
+    })
+
+    // Add the editor and panel to this new wrapper
+    providerWrapper.appendChild(this.providerEditor)
+    providerWrapper.appendChild(this.providerEditorModels)
+
+    // Show the options when the editor is focused
+    this.providerEditor.addEventListener('focus', () => {
+      this.editorProvidersDisplayed(true)
+    })
+
+    // Hide the options when the editor loses focus
+    this.providerEditor.addEventListener('blur', () => {
+      // A small delay allows a click on an option to register first
+      setTimeout(() => {
+        this.editorProvidersDisplayed(false)
+      }, 150)
+    })
+
+    // --- Assemble the Content Div ---
+    const providerGroup = document.createElement('div')
+    providerGroup.classList.add('pulsar-ai-model-selector-content-group')
+    const providerLabel = document.createElement('label')
+    providerLabel.classList.add('pulsar-ai-model-selector-content-provider-label')
+    providerLabel.textContent = 'Provider'
+    providerGroup.appendChild(providerLabel)
+    providerGroup.appendChild(providerWrapper)
+
+    parent.appendChild(providerGroup)
+  }
+
+  /*
+   * Create Model Name selector
+   */
+  private createModelName(parent: HTMLDivElement) {
+    const editorWrapper = document.createElement('div')
+    editorWrapper.classList.add('pulsar-ai-model-selector-content-name-editor')
+
+    this.modelEditor = document.createElement('atom-text-editor')
+    this.modelEditor.setAttribute('mini', '')
+    this.modelEditor.classList.add('pulsar-ai-model-selector-content-name-editor-input')
+
+    this.modelEditorModel = this.modelEditor.getModel()
+    this.modelEditorModel.setPlaceholderText('Select a provider first...')
+    // this.modelEditor.disabled = true; // Disabled until a provider is chosen
+
+    this.modelEditorModels = document.createElement('div');
+    this.modelEditorModels.classList.add('select-list', 'popover-list', 'pulsar-ai-model-selector-content-name-editor-options')
+    this.editorModelsDisplayed(false)
+
+    // Add the editor and panel to this new wrapper
+    editorWrapper.appendChild(this.modelEditor)
+    editorWrapper.appendChild(this.modelEditorModels)
+
+    // Show the options when the editor is focused
+    this.modelEditor.addEventListener('focus', () => {
+      if (this.modelProvider) {
+        this.editorModelsDisplayed(true)
+      }
+    })
+
+    // Hide the options when the editor loses focus
+    this.modelEditor.addEventListener('blur', () => {
+      // A small delay allows a click on a suggestion to register first
+      setTimeout(() => {
+        this.editorModelsDisplayed(false)
+      }, 150)
+    })
+
+    // Update the model when the editor text changes manually
+    this.modelEditorModel.onDidStopChanging(() => {
+      const currentText = this.modelEditorModel.getText()
+      if (this.modelName !== currentText) {
+        this.setModelName(currentText)
+        this.emitChange()
+      }
+    })
+
+    const modelGroup = document.createElement('div')
+    modelGroup.classList.add('pulsar-ai-model-selector-content-group')
+    const modelLabel = document.createElement('label')
+    modelLabel.classList.add('pulsar-ai-model-selector-content-name-label')
+    modelLabel.textContent = 'Model'
+    modelGroup.appendChild(modelLabel)
+    modelGroup.appendChild(editorWrapper)
+
+    parent.appendChild(modelGroup)
+  }
+
+  getComponent(): HTMLDetailsElement {
+    return this.detailsComponent
   }
 
   private setModelProvider(value: string) {
-    this.modelProvider = this.providerSelect.value
+    this.editorProvidersDisplayed(false)
+
+    this.providerEditorModel.setText(value)
+    this.modelProvider = value
+
+    this.setSummary()
   }
 
-  getModelName(): string {
-    return !this.modelName ? '' : this.modelName
+  getModelMetadata(): ModelMetadata {
+    return {
+      sessionId: this.sessionId ?? uuidv4(),
+      provider: !this.modelProvider ? '' : this.modelProvider,
+      name: !this.modelName ? '' : this.modelName
+    }
   }
 
   private setModelName(value: string) {
-    if (value !== this.modelName) {
-      this.modelInput.value = value
-      this.modelName = value
-    }
+    this.editorModelsDisplayed(false)
+
+    this.modelEditorModel.setText(value)
+    this.modelName = value
 
     this.setSummary()
   }

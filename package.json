@@ -2,31 +2,45 @@
   "name": "pulsar-ai",
   "main": "./dist/main.js",
   "version": "0.0.1",
-  "description": "Plugin AI pour Pulsar",
+  "description": "AI Plugin for Pulsar",
   "keywords": [],
-  "repository": "https://github.com/mjerem34/pulsar-ai",
+  "repository": "https://github.com/phantomjinx/pulsar-ai",
   "license": "MIT",
+  "author": "mjerem34, phantomjinx",
   "engines": {
     "pulsar": ">=1.0.0"
   },
   "scripts": {
-    "build": "tsup lib/main.ts --format cjs --external pulsar",
-    "dev": "tsup lib/main.ts --format cjs --external pulsar --watch"
+    "build": "tsup",
+    "dev": "tsup",
+    "test": "jest --watchAll=false --passWithNoTests",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@langchain/anthropic": "^0.3.24",
     "@langchain/core": "^0.3.62",
-    "@langchain/google-genai": "^0.0.11",
+    "@langchain/google-genai": "^0.2.13",
+    "@langchain/mistralai": "^0.2.1",
     "@langchain/openai": "^0.5.18",
     "atom": "^1.4.2",
     "highlight.js": "^11.9.0",
-    "langchain": "^0.2.0",
-    "marked": "^9.0.0"
+    "marked": "^9.0.0",
+    "marked-highlight": "^2.2.2"
   },
   "devDependencies": {
     "@types/atom": "^1.40.18",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.0.4",
+    "langchain": "^0.2.0",
+    "patch-package": "^8.0.0",
+    "ts-jest": "^29.4.0",
+    "ts-node": "^10.9.2",
     "tsup": "^8.0.2",
     "typescript": "^5.4.5"
+  },
+  "overrides": {
+    "@types/node": "^14.18.0",
+    "uuid": "^8.3.0"
   },
   "consumedServices": {
     "status-bar": {
@@ -40,72 +54,19 @@
       "type": "boolean",
       "default": false
     },
-    "openaiApiKey": {
-      "title": "OpenAI API Key",
-      "description": "Your API Key for OpenAI Models",
+    "apiKey": {
+      "title": "AI Service API Key",
+      "description": "Your API Key for AI Models",
       "type": "string",
       "default": "",
       "order": 1
     },
-    "anthropicApiKey": {
-      "title": "Anthropic API Key",
-      "description": "Your API Key for Anthropic Models",
-      "type": "string",
-      "default": "",
+    "limitHistory": {
+      "title": "Number of Historical Messages",
+      "description": "The number of old messages to be resubmitted to the AI as context (rest will be truncated)",
+      "type": "number",
+      "default": 3,
       "order": 2
-    },
-    "mistralApiKey": {
-      "title": "Mistral API Key",
-      "description": "Your API Key for Mistral Models",
-      "type": "string",
-      "default": "",
-      "order": 3
-    },
-    "defaultModel": {
-      "title": "Default model",
-      "description": "The default model",
-      "type": "string",
-      "default": "gpt-4o-mini",
-      "enum": [
-        "gpt-4o-mini",
-        "gpt-4o",
-        "claude-3-opus-latest",
-        "claude-3-5-sonnet-latest",
-        "claude-3-5-haiku-latest",
-        "mistral-large",
-        "mistral-medium",
-        "mistral-small"
-      ],
-      "order": 4
-    },
-    "autocompleteEnabled": {
-      "title": "Activer l'autocomplétion",
-      "description": "Activer ou désactiver la fonctionnalité d'autocomplétion IA",
-      "type": "boolean",
-      "default": true,
-      "order": 5
-    },
-    "autocompleteModel": {
-      "title": "Modèle pour l'autocomplétion",
-      "description": "Modèle d'IA à utiliser pour l'autocomplétion",
-      "type": "string",
-      "default": "gpt-4o-mini",
-      "enum": [
-        "gpt-4o-mini",
-        "gpt-4o",
-        "claude-3-5-haiku-latest",
-        "mistral-small"
-      ],
-      "order": 6
-    },
-    "autocompleteDelay": {
-      "title": "Délai d'autocomplétion (ms)",
-      "description": "Délai en millisecondes avant de déclencher l'autocomplétion",
-      "type": "integer",
-      "default": 500,
-      "minimum": 100,
-      "maximum": 2000,
-      "order": 7
     }
   },
   "deserializers": {

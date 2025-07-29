@@ -3,6 +3,26 @@ import { PulsarAIView } from './view'
 import { PulsarAITabTracker } from './tab-tracker'
 import { PulsarAIState } from './globals'
 
+// Polyfill for Object.hasOwn, which is not available in Node.js 14
+if (!Object.hasOwn) {
+  Object.hasOwn = function(obj, prop) {
+    return Object.prototype.hasOwnProperty.call(obj, prop);
+  }
+}
+
+// Polyfill for Array.prototype.at, which is not available in Node.js 14
+if (!Array.prototype.at) {
+  Array.prototype.at = function(index) {
+    // Convert negative index to positive index from the end
+    const effectiveIndex = index < 0 ? this.length + index : index;
+    // Check if the index is out of bounds
+    if (effectiveIndex < 0 || effectiveIndex >= this.length) {
+      return undefined;
+    }
+    return this[effectiveIndex];
+  };
+}
+
 let instance: PulsarAI | null = null
 
 let pulsarAIState: PulsarAIState
