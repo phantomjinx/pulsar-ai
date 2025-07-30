@@ -78,6 +78,20 @@ export class PulsarAIView implements ViewModel {
     // Create main container
     this.divContainer = document.createElement('div')
     this.divContainer.classList.add('pulsar-ai-container')
+    // Makes container a first citizen of pulsar
+    this.divContainer.setAttribute('tabindex', '-1')
+
+    // Enable copy functionality for container
+    atom.commands.add(this.divContainer, {
+      'core:copy': () => {
+        const selectedText = window.getSelection()?.toString()
+
+        if (selectedText && selectedText.length > 0) {
+          // Use Pulsar's clipboard API for guaranteed integration
+          atom.clipboard.write(selectedText)
+        }
+      }
+    })
 
     const modelMetadata = options.state?.modelMetadata
     this.setupUI(modelMetadata)
